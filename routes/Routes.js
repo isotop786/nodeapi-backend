@@ -6,6 +6,9 @@ const userController = require('../controllers/userController');
 
 const validator = require('../validator');
 
+const auth = require('../controllers/auth');
+
+
 
 // post routes
 router.get('/',index);
@@ -14,7 +17,14 @@ router.post('/create',validator.createPostValidator,createPost);
 
 // user routes
 
-router.get('/users', userController.index);
+// router.get('/users', userController.index);
+
+
+// Auth routes
+
+router.post('/signup',auth.signup);
+
+
 
 
 module.exports = router

@@ -42,6 +42,13 @@ userSchema.virtual('password')
     return this._password;
 });
 
+// authenticate users 
+userSchema.methods.authenticate = function(plaintext){
+    
+    return this.encryptedPassword(plaintext) === this.hashed_password
+}
+
+
 
 userSchema.methods.encryptedPassword = function(password){
         // first check whether the password is set 

@@ -18,7 +18,7 @@ exports.createPostValidator = (req,res,next)=>{
     });
 
 
-    // check for errors 
+    // displaying errors 
     const errors = req.validationErrors();
 
     if(errors){

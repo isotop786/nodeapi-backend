@@ -3,14 +3,16 @@ const dotenv = require('dotenv');
 dotenv.config();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser')
 
 const expressValidator = require('express-validator');
 
 const app = express();
 
 // middlewares
-// app.use(bodyParser.json());
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(cookieParser());
 app.use(express.json());
 app.use(morgan('combined'));
 app.use(expressValidator());

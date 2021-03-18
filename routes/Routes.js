@@ -11,7 +11,7 @@ const auth = require('../controllers/auth');
 
 
 // post routes
-router.get('/',index);
+router.get('/',auth.signinRequired ,index);
 router.post('/create',validator.createPostValidator,createPost);
 // router.post('/create',postCotroller.createPost);
 

@@ -32,6 +32,15 @@ db.connectDB();
 // routes
 app.use('/',Routes);
 
+// handlling UnauthorizedError
+app.use(function(err,req,res,next){
+    if (err.name === 'UnauthorizedError'){
+        res.status(401).json({
+            error:'Invalid Token / Token Not found'
+        });
+    }
+});
+
 
 
 app.listen(process.env.PORT || 80)

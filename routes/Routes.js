@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser')
 const router = express.Router();
-const {index, createPost} = require('../controllers/postController');
+const {index, createPost,postByUser} = require('../controllers/postController');
 const userController = require('../controllers/userController');
 
 const validator = require('../validator');
@@ -15,6 +15,7 @@ const {signinRequired} = require('../controllers/auth')
 // post routes
 router.get('/',index);
 router.post('/post/new/:userId',signinRequired ,createPost,validator.createPostValidator);
+router.get('/post/by/:userId',signinRequired, postByUser);
 // router.post('/create',postCotroller.createPost);
 
 // user routese

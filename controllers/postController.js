@@ -2,6 +2,7 @@ const express = require('express');
 const Post = require('../models/postModel')
 const formiable = require('formidable');
 const fs = require('fs')
+const _ = require('lodash');
 
 
 exports.index = (req,res)=>{
@@ -78,38 +79,78 @@ exports.postByUser = (req,res)=>{
 }
 
 
-// exports.postByUser =(req,res)=>{
-//     Post.find({postedBy:req.profile._id})
-//     .populate("postedBy","_id name")
-//     .sort("_created")
-//     .exec((err,posts)=>{
-//         if(err){
-//             return res.status(400)
-//             .json({
-//                 error:err
-//             });
-//         }
+// post by id 
+exports.postById = (req,res,next,id)=>{
+    Post.findById(id)
+    .populate("postedBy","_id name")
+    .exec((err,post)=>{
+        if(err || !post){
+            return res.status(400)
+            .json({
+                error:err
+            })
+        }
 
-//         res.json(posts)
-//     })
-// }
-
-
-
-
-
-
-
-
-
-
-
-// single post 
-
-exports.show = (req,res)=>{
-    console.log('ok')
+        req.post = post 
+        next();
+    })
 }
 
+exports.isPoster = (req,res,next)=>{
+    const isPoster = req.post.postedBy._id === req.auth._id;
+   
+    // console.log("req.post",req.post);
+    // console.log("req.post.postedBy._id",req.post.postedBy._id);
+    // console.log("req.auth",req.auth);
+    // console.log("req.auth._id",req.auth._id);
+
+    if(!isPoster){
+        return res.status(400)
+        .json({
+            error:"You are not authorized to delete the post"
+        });
+    }
+
+    next();
+}
+
+// update post 
+exports.updatePost = (req,res)=>{
+    let post = req.post 
+
+    post = _.extend(post,req.body);
+    post.update = Date.now 
+    post.save(err=>{
+        if(err){
+            return res.status(400)
+            .json({error:err})
+        }
+    })
+
+    res.json({
+        post
+    })
+
+}
+
+
+// delete post
+exports.deletePost = async (req,res)=>{
+    let post = req.post;
+
+    await console.log("auth is "+req.auth)
+
+    post.remove((err,post)=>{
+        if(err){
+            return res.status(400)
+            .json({error:err})
+        }
+
+        res.json({
+            message:"post has been deleted successfully"
+        });
+    })
+}
 
 
 

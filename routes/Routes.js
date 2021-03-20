@@ -14,7 +14,7 @@ const {signinRequired} = require('../controllers/auth')
 
 // post routes
 router.get('/',index);
-router.post('/create',signinRequired ,validator.createPostValidator,createPost);
+router.post('/post/new/:userId',signinRequired ,createPost,validator.createPostValidator);
 // router.post('/create',postCotroller.createPost);
 
 // user routese

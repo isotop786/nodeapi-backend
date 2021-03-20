@@ -1,9 +1,13 @@
 const express = require('express');
 const Post = require('../models/postModel')
+const formiable = require('formidable');
+const fs = require('fs')
+
 
 exports.index = (req,res)=>{
 
     Post.find().select('title body')
+    .populate('postedBy','_id name')
     .then((posts)=>{
         res.json({
            data:posts
@@ -15,34 +19,43 @@ exports.index = (req,res)=>{
         })
     })
 
-
-    // Post.find().select('title body')
-    // .then((posts)=>{
-    //     res.json({
-    //         data:posts
-    //     })
-    // })
-    // .catch((error)=>{
-    //     res.json({
-    //         error:error
-    //     })
-    // })
-
 }
 
 
 exports.createPost = (req,res)=>{
 
-    console.log(req.body);
+    let form = new formiable.IncomingForm();
 
-    const post = new Post(req.body);
+    form.keepExtensions = true;
 
-    post.save((error,result)=>{
-        if(error) return res.status(500).json(error);
+    form.parse(req,(err,fields,files)=>{
+        if(err){
+            return res.status(400)
+            .json({
+                error:"Image could not be uploaded "
+            });
+        }
 
-        res.status(200).json({
-            post:result
-        })
+        let post = new Post(fields);
+        post.postedBy = req.profile;
+
+        if(files.photo){
+            post.photo.data =fs.readFileSync(files.photo.path) 
+            post.photo.contentType = files.photo.type;
+        }
+
+        post.save((err, result)=>{
+            if(err){
+                return res.status(400)
+                .json({
+                     error:err
+                });
+            }
+
+            result.postedBy.hashed_password = undefined;
+            result.postedBy.salt = undefined;
+            res.json(result);
+        } );
     });
 }
 
